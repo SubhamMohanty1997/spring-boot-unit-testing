@@ -144,4 +144,37 @@ public class EmployeeControllerTest {
                 .andDo(print());
     }
 
+    //update employee +ve scenario
+    @Test
+    public void givenEmployeeIdAndEmployeeObject_whenUpdateEmployee_thenReturnUpdatedEmployeeObject() throws Exception{
+          long employeeId = 1L;
+          Employee savedEmployee = Employee.builder()
+                .firstName("Subham")
+                .lastName("Mohanty")
+                .email("subham087mohanty@gmail.com")
+                .build();
+
+          Employee updatedEmployee = Employee.builder()
+                .firstName("Subham")
+                .lastName("Mohanty")
+                .email("mohantysubham076@gmail.com")
+                .build();
+
+          given(employeeService.getEmployeeById(employeeId)).willReturn(Optional.of(savedEmployee));
+
+          given(employeeService.updateEmployee(any(Employee.class)))
+                  .willAnswer((invocationOnMock)->invocationOnMock.getArgument(0));
+
+          ResultActions response = mockMvc.perform(put("/api/employees/update/{id}",employeeId)
+                  .contentType(MediaType.APPLICATION_JSON_VALUE)
+                  .content(objectMapper.writeValueAsString(updatedEmployee)));
+
+          response.andExpect(status().isOk())
+                  .andDo(print())
+                  .andExpect(jsonPath("$.firstName",is(updatedEmployee.getFirstName())))
+                  .andExpect(jsonPath("$.lastName",is(updatedEmployee.getLastName())))
+                  .andExpect(jsonPath("$.email",is(updatedEmployee.getEmail())));
+
+    }
+
 }
